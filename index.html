@@ -1,70 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Workout</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💪</text></svg>">
+  <style>
+    :root {
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f5f5f5;
+      --color-text-primary: #1a1a1a;
+      --color-text-secondary: #666666;
+      --color-text-tertiary: #999999;
+      --color-border-secondary: #e0e0e0;
+      --color-border-tertiary: #eeeeee;
+      --border-radius-md: 8px;
+      --border-radius-lg: 12px;
+      --color-success: #1D9E75;
+      --color-success-bg: #E1F5EE;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--color-background-primary); }
+    .container { padding: 1.5rem; font-family: var(--font-sans); max-width: 900px; margin: 0 auto; }
 
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  .container { padding: 1rem 0; font-family: var(--font-sans); }
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.25rem; }
-  .stat { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px; text-align: center; }
-  .stat-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
-  .stat-label { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
-  .phase-header { display: flex; align-items: center; gap: 10px; margin: 1.25rem 0 0.75rem; }
-  .phase-badge { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
-  .phase-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
-  .phase-duration { font-size: 13px; color: var(--color-text-secondary); margin-left: auto; }
-  .exercise-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
-  .ex-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 16px; }
-  .ex-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
-  .ex-detail { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; }
-  .ex-cal { font-size: 12px; color: #0F6E56; font-weight: 500; }
-  .ex-link { display: inline-flex; align-items: center; gap: 5px; margin-top: 9px; font-size: 12px; color: #185FA5; text-decoration: none; border: 0.5px solid #B5D4F4; border-radius: 20px; padding: 3px 10px; background: #E6F1FB; }
-  .ex-link:hover { background: #B5D4F4; }
-  .play-icon { width: 10px; height: 10px; display: inline-block; }
-  hr.div { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 1.25rem 0; }
-  .tip { font-size: 13px; color: var(--color-text-secondary); background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 14px; margin-top: 1.25rem; }
-  .view-toggle { display: flex; gap: 8px; margin-bottom: 1rem; }
-  .vtab { flex: 1; padding: 8px; text-align: center; font-size: 13px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); cursor: pointer; background: transparent; color: var(--color-text-secondary); font-family: var(--font-sans); }
-  .vtab.on { background: var(--color-background-secondary); color: var(--color-text-primary); font-weight: 500; }
-  .big-timer { text-align: center; font-size: 48px; font-weight: 500; color: var(--color-text-primary); letter-spacing: -1px; margin: 0.5rem 0; }
-  .current-ex { text-align: center; font-size: 16px; color: var(--color-text-secondary); margin-bottom: 0.25rem; }
-  .next-up { text-align: center; font-size: 13px; color: var(--color-text-tertiary); margin-top: 0.25rem; }
-  .timer-bar { height: 4px; border-radius: 2px; background: var(--color-border-tertiary); margin: 0.75rem 0 0; overflow: hidden; }
-  .timer-fill { height: 100%; border-radius: 2px; transition: width 1s linear; }
-  .controls { display: flex; gap: 10px; margin-top: 1rem; }
-  .btn { flex: 1; padding: 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; color: var(--color-text-primary); font-size: 14px; cursor: pointer; font-family: var(--font-sans); }
-  .btn:hover { background: var(--color-background-secondary); }
-  .btn.primary { background: #1D9E75; color: #E1F5EE; border-color: #1D9E75; }
-  .btn.primary:hover { background: #0F6E56; }
-  .phase-ind { text-align: center; font-size: 13px; color: var(--color-text-secondary); margin-top: 0.5rem; }
-  .timer-vid-link { display: block; text-align: center; font-size: 12px; color: #185FA5; margin-top: 0.75rem; text-decoration: none; }
-  .timer-vid-link:hover { text-decoration: underline; }
-</style>
+    /* Header */
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .header h1 { font-size: 20px; font-weight: 600; color: var(--color-text-primary); }
+    .new-session-btn { padding: 8px 16px; font-size: 13px; border: none; border-radius: var(--border-radius-md); background: var(--color-success); color: white; cursor: pointer; font-family: var(--font-sans); font-weight: 500; }
+    .new-session-btn:hover { background: #0F6E56; }
 
-<div class="container">
-  <div class="stats">
-    <div class="stat"><div class="stat-val">20</div><div class="stat-label">minutes</div></div>
-    <div class="stat"><div class="stat-val">~180</div><div class="stat-label">est. calories</div></div>
-    <div class="stat"><div class="stat-val">19</div><div class="stat-label">exercises</div></div>
-  </div>
+    /* Stats */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+    .stat { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px; text-align: center; }
+    .stat-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+    .stat-val.progress { color: var(--color-success); }
+    .stat-label { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
 
-  <div class="view-toggle">
-    <button class="vtab on" onclick="showView('plan')">Routine plan</button>
-    <button class="vtab" onclick="showView('timer')">Workout timer</button>
-  </div>
+    /* Timer Panel - Sticky */
+    .timer-panel { position: sticky; top: 0; background: var(--color-background-primary); z-index: 100; padding: 1rem 0; margin-bottom: 1rem; border-bottom: 1px solid var(--color-border-tertiary); }
+    .timer-content { display: flex; align-items: center; gap: 1.5rem; }
+    .timer-left { flex: 1; }
+    .timer-display { font-size: 42px; font-weight: 600; color: var(--color-text-primary); letter-spacing: -1px; line-height: 1; }
+    .timer-exercise { font-size: 15px; color: var(--color-text-secondary); margin-top: 4px; }
+    .timer-next { font-size: 12px; color: var(--color-text-tertiary); margin-top: 2px; }
+    .timer-bar { height: 6px; border-radius: 3px; background: var(--color-border-tertiary); margin-top: 8px; overflow: hidden; }
+    .timer-fill { height: 100%; border-radius: 3px; transition: width 1s linear; }
+    .timer-right { display: flex; gap: 8px; }
+    .timer-btn { padding: 10px 20px; border: 1px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; color: var(--color-text-primary); font-size: 14px; cursor: pointer; font-family: var(--font-sans); font-weight: 500; }
+    .timer-btn:hover { background: var(--color-background-secondary); }
+    .timer-btn.primary { background: var(--color-success); color: white; border-color: var(--color-success); }
+    .timer-btn.primary:hover { background: #0F6E56; }
+    .timer-phase { font-size: 11px; color: var(--color-text-tertiary); margin-top: 6px; }
 
-  <div id="planView"></div>
+    /* Phase sections */
+    .phase-header { display: flex; align-items: center; gap: 10px; margin: 1.25rem 0 0.75rem; }
+    .phase-badge { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+    .phase-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+    .phase-duration { font-size: 13px; color: var(--color-text-secondary); margin-left: auto; }
+    .phase-progress { font-size: 12px; color: var(--color-success); font-weight: 500; }
 
-  <div id="timerView" style="display:none;">
-    <div class="big-timer" id="bigTimer">5:00</div>
-    <div class="current-ex" id="currentExName">Press Start to begin</div>
-    <div class="next-up" id="nextExName"></div>
-    <div class="timer-bar"><div class="timer-fill" id="timerFill" style="width:100%;background:#1D9E75;"></div></div>
-    <a id="timerVidLink" href="#" target="_blank" class="timer-vid-link" style="display:none;">Watch how to do this exercise ↗</a>
-    <div class="controls">
-      <button class="btn" onclick="resetTimer()">Reset</button>
-      <button class="btn primary" id="startBtn" onclick="toggleTimer()">Start</button>
+    /* Exercise grid */
+    .exercise-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+    .ex-card { background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 16px; transition: all 0.2s; position: relative; }
+    .ex-card:hover { border-color: var(--color-border-secondary); }
+    .ex-card.completed { background: var(--color-success-bg); border-color: var(--color-success); }
+    .ex-card.current { border-color: var(--color-success); box-shadow: 0 0 0 2px rgba(29, 158, 117, 0.2); }
+
+    /* Checkbox */
+    .ex-checkbox { position: absolute; top: 12px; right: 12px; }
+    .ex-checkbox input { display: none; }
+    .ex-checkbox label { width: 22px; height: 22px; border: 2px solid var(--color-border-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+    .ex-checkbox label:hover { border-color: var(--color-success); }
+    .ex-checkbox input:checked + label { background: var(--color-success); border-color: var(--color-success); }
+    .ex-checkbox input:checked + label::after { content: "✓"; color: white; font-size: 12px; font-weight: bold; }
+
+    .ex-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; padding-right: 30px; }
+    .ex-detail { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; }
+    .ex-cal { font-size: 12px; color: #0F6E56; font-weight: 500; }
+    .ex-link { display: inline-flex; align-items: center; gap: 5px; margin-top: 9px; font-size: 12px; color: #185FA5; text-decoration: none; border: 0.5px solid #B5D4F4; border-radius: 20px; padding: 3px 10px; background: #E6F1FB; }
+    .ex-link:hover { background: #B5D4F4; }
+    .play-icon { width: 10px; height: 10px; display: inline-block; }
+
+    hr.div { border: none; border-top: 1px solid var(--color-border-tertiary); margin: 1.25rem 0; }
+
+    .tip { font-size: 13px; color: var(--color-text-secondary); background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 14px; margin-top: 1.25rem; }
+
+    /* Completion celebration */
+    .celebration { display: none; text-align: center; padding: 2rem; background: var(--color-success-bg); border-radius: var(--border-radius-lg); margin-bottom: 1rem; }
+    .celebration.show { display: block; }
+    .celebration h2 { font-size: 24px; color: var(--color-success); margin-bottom: 8px; }
+    .celebration p { color: var(--color-text-secondary); }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .timer-content { flex-direction: column; align-items: stretch; text-align: center; }
+      .timer-right { justify-content: center; }
+      .timer-display { font-size: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Family Workout</h1>
+      <button class="new-session-btn" onclick="newSession()">New Session</button>
     </div>
-    <div class="phase-ind" id="phaseInd"></div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-val">20</div><div class="stat-label">minutes</div></div>
+      <div class="stat"><div class="stat-val">~180</div><div class="stat-label">est. calories</div></div>
+      <div class="stat"><div class="stat-val">19</div><div class="stat-label">exercises</div></div>
+      <div class="stat"><div class="stat-val progress" id="completedCount">0/19</div><div class="stat-label">completed</div></div>
+    </div>
+
+    <div class="timer-panel">
+      <div class="timer-content">
+        <div class="timer-left">
+          <div class="timer-display" id="timerDisplay">0:40</div>
+          <div class="timer-exercise" id="timerExercise">Press Start to begin</div>
+          <div class="timer-next" id="timerNext"></div>
+          <div class="timer-bar"><div class="timer-fill" id="timerFill" style="width:100%;background:#1D9E75;"></div></div>
+          <div class="timer-phase" id="timerPhase"></div>
+        </div>
+        <div class="timer-right">
+          <button class="timer-btn" onclick="skipExercise()">Skip</button>
+          <button class="timer-btn primary" id="startBtn" onclick="toggleTimer()">Start</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="celebration" id="celebration">
+      <h2>Workout Complete!</h2>
+      <p>Great job! You burned approximately 180 calories.</p>
+    </div>
+
+    <div id="planView"></div>
   </div>
-</div>
 
 <script>
 const routine = [
@@ -73,7 +146,6 @@ const routine = [
   { name: "Hip circles", dur: 40, cal: 3, phase: "warm", tip: "Wide slow circles", vid: "https://www.youtube.com/results?search_query=hip+circles+warmup+tutorial" },
   { name: "Leg swings", dur: 40, cal: 3, phase: "warm", tip: "Hold wall for balance", vid: "https://www.youtube.com/results?search_query=leg+swings+warmup+tutorial" },
   { name: "Torso twists", dur: 40, cal: 3, phase: "warm", tip: "Keep hips facing front", vid: "https://www.youtube.com/results?search_query=torso+twists+warmup+tutorial" },
-
   { name: "Jumping jacks", dur: 45, cal: 10, phase: "cardio", tip: "Land soft, knees soft", vid: "https://www.youtube.com/results?search_query=how+to+do+jumping+jacks+tutorial" },
   { name: "High knees", dur: 45, cal: 12, phase: "cardio", tip: "Pump arms hard", vid: "https://www.youtube.com/results?search_query=high+knees+exercise+tutorial" },
   { name: "Squat + reach", dur: 45, cal: 9, phase: "cardio", tip: "Push hips back, reach up", vid: "https://www.youtube.com/results?search_query=squat+and+reach+overhead+exercise+tutorial" },
@@ -82,7 +154,6 @@ const routine = [
   { name: "Butt kicks", dur: 45, cal: 11, phase: "cardio", tip: "Heels to glutes", vid: "https://www.youtube.com/results?search_query=butt+kicks+exercise+tutorial" },
   { name: "Skater hops", dur: 45, cal: 12, phase: "cardio", tip: "Bound wide side to side", vid: "https://www.youtube.com/results?search_query=skater+hops+exercise+tutorial" },
   { name: "Inchworm walk", dur: 45, cal: 7, phase: "cardio", tip: "Walk hands out slow", vid: "https://www.youtube.com/results?search_query=inchworm+exercise+tutorial" },
-
   { name: "Squat jumps", dur: 40, cal: 15, phase: "hiit", tip: "Land quiet, sit deep", vid: "https://www.youtube.com/results?search_query=squat+jumps+exercise+tutorial" },
   { name: "Burpees (no jump)", dur: 40, cal: 14, phase: "hiit", tip: "Modified — step back", vid: "https://www.youtube.com/results?search_query=modified+burpees+no+jump+tutorial" },
   { name: "Mountain climbers", dur: 40, cal: 13, phase: "hiit", tip: "Hips down, core tight", vid: "https://www.youtube.com/results?search_query=mountain+climbers+exercise+tutorial" },
@@ -96,86 +167,255 @@ const phases = [
   { key: "hiit", label: "HIIT blast", duration: "5 min", badgeStyle: "background:#FAECE7;color:#4A1B0C;", color: "#D85A30" },
 ];
 
-const plan = document.getElementById("planView");
-phases.forEach((ph, pi) => {
-  if (pi > 0) { const hr = document.createElement("hr"); hr.className = "div"; plan.appendChild(hr); }
-  const hdr = document.createElement("div"); hdr.className = "phase-header";
-  hdr.innerHTML = `<span class="phase-badge" style="${ph.badgeStyle}">${ph.label}</span><span class="phase-title">Phase ${pi+1}</span><span class="phase-duration">${ph.duration}</span>`;
-  plan.appendChild(hdr);
-  const grid = document.createElement("div"); grid.className = "exercise-grid";
-  routine.filter(e => e.phase === ph.key).forEach(ex => {
-    const c = document.createElement("div"); c.className = "ex-card";
-    c.innerHTML = `<div class="ex-name">${ex.name}</div><div class="ex-detail">${ex.dur}s · ${ex.tip}</div><div class="ex-cal">~${ex.cal} kcal</div><a class="ex-link" href="${ex.vid}" target="_blank"><svg class="play-icon" viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9" fill="#185FA5"/></svg>Watch tutorial</a>`;
-    grid.appendChild(c);
-  });
-  plan.appendChild(grid);
-});
-
-const tip = document.createElement("div"); tip.className = "tip";
-tip.textContent = "Tap 'Watch tutorial' on any card to see a how-to video on YouTube. Rest 15–20 sec between exercises if needed.";
-plan.appendChild(tip);
-
+// State
 let timerInt = null, running = false, curIdx = 0, elapsed = 0;
-function fmt(s) { return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
-function phaseColor(p) { return phases.find(x => x.key === p)?.color || "#1D9E75"; }
-function phaseLabel(p) { return phases.find(x => x.key === p)?.label || ""; }
+let completed = new Set();
 
-function setDisplay() {
+// Build the plan view
+function buildPlanView() {
+  const plan = document.getElementById("planView");
+  plan.innerHTML = '';
+
+  let globalIdx = 0;
+  phases.forEach((ph, pi) => {
+    if (pi > 0) {
+      const hr = document.createElement("hr");
+      hr.className = "div";
+      plan.appendChild(hr);
+    }
+
+    const phaseExercises = routine.filter(e => e.phase === ph.key);
+    const phaseCompleted = phaseExercises.filter((_, i) => {
+      const idx = routine.findIndex(r => r === phaseExercises[i]);
+      return completed.has(idx);
+    }).length;
+
+    const hdr = document.createElement("div");
+    hdr.className = "phase-header";
+    hdr.innerHTML = `
+      <span class="phase-badge" style="${ph.badgeStyle}">${ph.label}</span>
+      <span class="phase-title">Phase ${pi+1}</span>
+      <span class="phase-progress">${phaseCompleted}/${phaseExercises.length}</span>
+      <span class="phase-duration">${ph.duration}</span>
+    `;
+    plan.appendChild(hdr);
+
+    const grid = document.createElement("div");
+    grid.className = "exercise-grid";
+
+    routine.filter(e => e.phase === ph.key).forEach(ex => {
+      const idx = globalIdx++;
+      const isCompleted = completed.has(idx);
+      const isCurrent = idx === curIdx && running;
+
+      const c = document.createElement("div");
+      c.className = "ex-card" + (isCompleted ? " completed" : "") + (isCurrent ? " current" : "");
+      c.id = `ex-card-${idx}`;
+      c.innerHTML = `
+        <div class="ex-checkbox">
+          <input type="checkbox" id="check-${idx}" ${isCompleted ? "checked" : ""} onchange="toggleComplete(${idx})">
+          <label for="check-${idx}"></label>
+        </div>
+        <div class="ex-name">${ex.name}</div>
+        <div class="ex-detail">${ex.dur}s · ${ex.tip}</div>
+        <div class="ex-cal">~${ex.cal} kcal</div>
+        <a class="ex-link" href="${ex.vid}" target="_blank">
+          <svg class="play-icon" viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9" fill="#185FA5"/></svg>
+          Watch tutorial
+        </a>
+      `;
+      grid.appendChild(c);
+    });
+    plan.appendChild(grid);
+  });
+
+  const tip = document.createElement("div");
+  tip.className = "tip";
+  tip.textContent = "Tap 'Watch tutorial' on any card to see a how-to video on YouTube. Rest 15–20 sec between exercises if needed.";
+  plan.appendChild(tip);
+}
+
+// Toggle exercise completion
+function toggleComplete(idx) {
+  if (completed.has(idx)) {
+    completed.delete(idx);
+  } else {
+    completed.add(idx);
+  }
+  updateCompletedCount();
+  updateCardState(idx);
+  saveState();
+  checkAllComplete();
+}
+
+// Update single card state without rebuilding
+function updateCardState(idx) {
+  const card = document.getElementById(`ex-card-${idx}`);
+  if (card) {
+    card.classList.toggle("completed", completed.has(idx));
+  }
+  // Update phase progress
+  buildPlanView();
+}
+
+// Update completed count display
+function updateCompletedCount() {
+  document.getElementById("completedCount").textContent = `${completed.size}/${routine.length}`;
+}
+
+// Check if all exercises complete
+function checkAllComplete() {
+  if (completed.size === routine.length) {
+    document.getElementById("celebration").classList.add("show");
+  } else {
+    document.getElementById("celebration").classList.remove("show");
+  }
+}
+
+// Timer functions
+function fmt(s) {
+  return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0");
+}
+
+function phaseColor(p) {
+  return phases.find(x => x.key === p)?.color || "#1D9E75";
+}
+
+function phaseLabel(p) {
+  return phases.find(x => x.key === p)?.label || "";
+}
+
+function setTimerDisplay() {
   if (curIdx >= routine.length) {
-    document.getElementById("bigTimer").textContent = "Done!";
-    document.getElementById("currentExName").textContent = "Great work! ~180 kcal burned";
-    document.getElementById("nextExName").textContent = "";
+    document.getElementById("timerDisplay").textContent = "Done!";
+    document.getElementById("timerExercise").textContent = "Great work! All exercises complete.";
+    document.getElementById("timerNext").textContent = "";
     document.getElementById("timerFill").style.width = "100%";
-    document.getElementById("phaseInd").textContent = "";
-    document.getElementById("timerVidLink").style.display = "none";
-    clearInterval(timerInt); running = false;
-    document.getElementById("startBtn").textContent = "Start";
+    document.getElementById("timerPhase").textContent = "";
+    clearInterval(timerInt);
+    running = false;
+    document.getElementById("startBtn").textContent = "Restart";
+    document.getElementById("celebration").classList.add("show");
     return;
   }
+
   const ex = routine[curIdx];
   const rem = ex.dur - elapsed;
-  document.getElementById("bigTimer").textContent = fmt(rem);
-  document.getElementById("currentExName").textContent = ex.name;
+  document.getElementById("timerDisplay").textContent = fmt(rem);
+  document.getElementById("timerExercise").textContent = ex.name;
+
   const next = routine[curIdx + 1];
-  document.getElementById("nextExName").textContent = next ? "Next: " + next.name : "Last exercise!";
+  document.getElementById("timerNext").textContent = next ? "Next: " + next.name : "Last exercise!";
   document.getElementById("timerFill").style.width = Math.round((rem / ex.dur) * 100) + "%";
   document.getElementById("timerFill").style.background = phaseColor(ex.phase);
-  document.getElementById("phaseInd").textContent = phaseLabel(ex.phase) + " · Exercise " + (curIdx+1) + " of " + routine.length;
-  const lnk = document.getElementById("timerVidLink");
-  lnk.href = ex.vid; lnk.style.display = "block";
+  document.getElementById("timerPhase").textContent = phaseLabel(ex.phase) + " · Exercise " + (curIdx+1) + " of " + routine.length;
+
+  // Highlight current card
+  highlightCurrentCard();
+}
+
+function highlightCurrentCard() {
+  document.querySelectorAll(".ex-card").forEach(c => c.classList.remove("current"));
+  const currentCard = document.getElementById(`ex-card-${curIdx}`);
+  if (currentCard && running) {
+    currentCard.classList.add("current");
+    currentCard.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
 }
 
 function toggleTimer() {
+  if (curIdx >= routine.length) {
+    // Restart
+    curIdx = 0;
+    elapsed = 0;
+    document.getElementById("celebration").classList.remove("show");
+  }
+
   if (running) {
-    clearInterval(timerInt); running = false;
+    clearInterval(timerInt);
+    running = false;
     document.getElementById("startBtn").textContent = "Resume";
+    document.querySelectorAll(".ex-card").forEach(c => c.classList.remove("current"));
   } else {
     running = true;
     document.getElementById("startBtn").textContent = "Pause";
-    setDisplay();
+    setTimerDisplay();
+
     timerInt = setInterval(() => {
       elapsed++;
-      if (elapsed >= routine[curIdx].dur) { curIdx++; elapsed = 0; }
-      setDisplay();
+      if (elapsed >= routine[curIdx].dur) {
+        // Auto-check completed exercise
+        if (!completed.has(curIdx)) {
+          completed.add(curIdx);
+          updateCompletedCount();
+          saveState();
+        }
+        curIdx++;
+        elapsed = 0;
+        buildPlanView();
+      }
+      setTimerDisplay();
     }, 1000);
   }
 }
 
-function resetTimer() {
-  clearInterval(timerInt); running = false; curIdx = 0; elapsed = 0;
-  document.getElementById("startBtn").textContent = "Start";
-  document.getElementById("bigTimer").textContent = "5:00";
-  document.getElementById("currentExName").textContent = "Press Start to begin";
-  document.getElementById("nextExName").textContent = "";
-  document.getElementById("timerFill").style.width = "100%";
-  document.getElementById("timerFill").style.background = "#1D9E75";
-  document.getElementById("phaseInd").textContent = "";
-  document.getElementById("timerVidLink").style.display = "none";
+function skipExercise() {
+  if (curIdx < routine.length) {
+    // Mark as completed when skipping
+    if (!completed.has(curIdx)) {
+      completed.add(curIdx);
+      updateCompletedCount();
+      saveState();
+    }
+    curIdx++;
+    elapsed = 0;
+    buildPlanView();
+    setTimerDisplay();
+    checkAllComplete();
+  }
 }
 
-function showView(v) {
-  document.getElementById("planView").style.display = v === "plan" ? "" : "none";
-  document.getElementById("timerView").style.display = v === "timer" ? "" : "none";
-  document.querySelectorAll(".vtab").forEach((t, i) => t.className = "vtab" + (["plan","timer"][i] === v ? " on" : ""));
+function newSession() {
+  clearInterval(timerInt);
+  running = false;
+  curIdx = 0;
+  elapsed = 0;
+  completed.clear();
+
+  document.getElementById("startBtn").textContent = "Start";
+  document.getElementById("celebration").classList.remove("show");
+
+  updateCompletedCount();
+  buildPlanView();
+  setTimerDisplay();
+  saveState();
 }
+
+// LocalStorage persistence
+function saveState() {
+  localStorage.setItem("workoutState", JSON.stringify({
+    completed: Array.from(completed),
+    curIdx: curIdx,
+    elapsed: elapsed
+  }));
+}
+
+function loadState() {
+  const saved = localStorage.getItem("workoutState");
+  if (saved) {
+    const state = JSON.parse(saved);
+    completed = new Set(state.completed || []);
+    curIdx = state.curIdx || 0;
+    elapsed = state.elapsed || 0;
+  }
+}
+
+// Initialize
+loadState();
+buildPlanView();
+updateCompletedCount();
+setTimerDisplay();
+checkAllComplete();
 </script>
+</body>
+</html>
