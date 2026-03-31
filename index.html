@@ -1,0 +1,181 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .container { padding: 1rem 0; font-family: var(--font-sans); }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+  .stat { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px; text-align: center; }
+  .stat-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .stat-label { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+  .phase-header { display: flex; align-items: center; gap: 10px; margin: 1.25rem 0 0.75rem; }
+  .phase-badge { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+  .phase-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+  .phase-duration { font-size: 13px; color: var(--color-text-secondary); margin-left: auto; }
+  .exercise-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+  .ex-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 16px; }
+  .ex-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+  .ex-detail { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; }
+  .ex-cal { font-size: 12px; color: #0F6E56; font-weight: 500; }
+  .ex-link { display: inline-flex; align-items: center; gap: 5px; margin-top: 9px; font-size: 12px; color: #185FA5; text-decoration: none; border: 0.5px solid #B5D4F4; border-radius: 20px; padding: 3px 10px; background: #E6F1FB; }
+  .ex-link:hover { background: #B5D4F4; }
+  .play-icon { width: 10px; height: 10px; display: inline-block; }
+  hr.div { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 1.25rem 0; }
+  .tip { font-size: 13px; color: var(--color-text-secondary); background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 14px; margin-top: 1.25rem; }
+  .view-toggle { display: flex; gap: 8px; margin-bottom: 1rem; }
+  .vtab { flex: 1; padding: 8px; text-align: center; font-size: 13px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); cursor: pointer; background: transparent; color: var(--color-text-secondary); font-family: var(--font-sans); }
+  .vtab.on { background: var(--color-background-secondary); color: var(--color-text-primary); font-weight: 500; }
+  .big-timer { text-align: center; font-size: 48px; font-weight: 500; color: var(--color-text-primary); letter-spacing: -1px; margin: 0.5rem 0; }
+  .current-ex { text-align: center; font-size: 16px; color: var(--color-text-secondary); margin-bottom: 0.25rem; }
+  .next-up { text-align: center; font-size: 13px; color: var(--color-text-tertiary); margin-top: 0.25rem; }
+  .timer-bar { height: 4px; border-radius: 2px; background: var(--color-border-tertiary); margin: 0.75rem 0 0; overflow: hidden; }
+  .timer-fill { height: 100%; border-radius: 2px; transition: width 1s linear; }
+  .controls { display: flex; gap: 10px; margin-top: 1rem; }
+  .btn { flex: 1; padding: 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; color: var(--color-text-primary); font-size: 14px; cursor: pointer; font-family: var(--font-sans); }
+  .btn:hover { background: var(--color-background-secondary); }
+  .btn.primary { background: #1D9E75; color: #E1F5EE; border-color: #1D9E75; }
+  .btn.primary:hover { background: #0F6E56; }
+  .phase-ind { text-align: center; font-size: 13px; color: var(--color-text-secondary); margin-top: 0.5rem; }
+  .timer-vid-link { display: block; text-align: center; font-size: 12px; color: #185FA5; margin-top: 0.75rem; text-decoration: none; }
+  .timer-vid-link:hover { text-decoration: underline; }
+</style>
+
+<div class="container">
+  <div class="stats">
+    <div class="stat"><div class="stat-val">20</div><div class="stat-label">minutes</div></div>
+    <div class="stat"><div class="stat-val">~180</div><div class="stat-label">est. calories</div></div>
+    <div class="stat"><div class="stat-val">19</div><div class="stat-label">exercises</div></div>
+  </div>
+
+  <div class="view-toggle">
+    <button class="vtab on" onclick="showView('plan')">Routine plan</button>
+    <button class="vtab" onclick="showView('timer')">Workout timer</button>
+  </div>
+
+  <div id="planView"></div>
+
+  <div id="timerView" style="display:none;">
+    <div class="big-timer" id="bigTimer">5:00</div>
+    <div class="current-ex" id="currentExName">Press Start to begin</div>
+    <div class="next-up" id="nextExName"></div>
+    <div class="timer-bar"><div class="timer-fill" id="timerFill" style="width:100%;background:#1D9E75;"></div></div>
+    <a id="timerVidLink" href="#" target="_blank" class="timer-vid-link" style="display:none;">Watch how to do this exercise ↗</a>
+    <div class="controls">
+      <button class="btn" onclick="resetTimer()">Reset</button>
+      <button class="btn primary" id="startBtn" onclick="toggleTimer()">Start</button>
+    </div>
+    <div class="phase-ind" id="phaseInd"></div>
+  </div>
+</div>
+
+<script>
+const routine = [
+  { name: "March in place", dur: 40, cal: 4, phase: "warm", tip: "Lift knees to hip height", vid: "https://www.youtube.com/results?search_query=march+in+place+exercise+tutorial" },
+  { name: "Arm circles", dur: 40, cal: 3, phase: "warm", tip: "30 fwd, 10 back", vid: "https://www.youtube.com/results?search_query=arm+circles+exercise+tutorial" },
+  { name: "Hip circles", dur: 40, cal: 3, phase: "warm", tip: "Wide slow circles", vid: "https://www.youtube.com/results?search_query=hip+circles+warmup+tutorial" },
+  { name: "Leg swings", dur: 40, cal: 3, phase: "warm", tip: "Hold wall for balance", vid: "https://www.youtube.com/results?search_query=leg+swings+warmup+tutorial" },
+  { name: "Torso twists", dur: 40, cal: 3, phase: "warm", tip: "Keep hips facing front", vid: "https://www.youtube.com/results?search_query=torso+twists+warmup+tutorial" },
+
+  { name: "Jumping jacks", dur: 45, cal: 10, phase: "cardio", tip: "Land soft, knees soft", vid: "https://www.youtube.com/results?search_query=how+to+do+jumping+jacks+tutorial" },
+  { name: "High knees", dur: 45, cal: 12, phase: "cardio", tip: "Pump arms hard", vid: "https://www.youtube.com/results?search_query=high+knees+exercise+tutorial" },
+  { name: "Squat + reach", dur: 45, cal: 9, phase: "cardio", tip: "Push hips back, reach up", vid: "https://www.youtube.com/results?search_query=squat+and+reach+overhead+exercise+tutorial" },
+  { name: "Side shuffles", dur: 45, cal: 9, phase: "cardio", tip: "Stay low, quick feet", vid: "https://www.youtube.com/results?search_query=side+shuffle+cardio+exercise+tutorial" },
+  { name: "Step touch + punch", dur: 45, cal: 8, phase: "cardio", tip: "Full extension on punch", vid: "https://www.youtube.com/results?search_query=step+touch+punch+cardio+exercise+tutorial" },
+  { name: "Butt kicks", dur: 45, cal: 11, phase: "cardio", tip: "Heels to glutes", vid: "https://www.youtube.com/results?search_query=butt+kicks+exercise+tutorial" },
+  { name: "Skater hops", dur: 45, cal: 12, phase: "cardio", tip: "Bound wide side to side", vid: "https://www.youtube.com/results?search_query=skater+hops+exercise+tutorial" },
+  { name: "Inchworm walk", dur: 45, cal: 7, phase: "cardio", tip: "Walk hands out slow", vid: "https://www.youtube.com/results?search_query=inchworm+exercise+tutorial" },
+
+  { name: "Squat jumps", dur: 40, cal: 15, phase: "hiit", tip: "Land quiet, sit deep", vid: "https://www.youtube.com/results?search_query=squat+jumps+exercise+tutorial" },
+  { name: "Burpees (no jump)", dur: 40, cal: 14, phase: "hiit", tip: "Modified — step back", vid: "https://www.youtube.com/results?search_query=modified+burpees+no+jump+tutorial" },
+  { name: "Mountain climbers", dur: 40, cal: 13, phase: "hiit", tip: "Hips down, core tight", vid: "https://www.youtube.com/results?search_query=mountain+climbers+exercise+tutorial" },
+  { name: "Speed punches", dur: 40, cal: 12, phase: "hiit", tip: "Rapid alternating punches", vid: "https://www.youtube.com/results?search_query=speed+punches+cardio+exercise+tutorial" },
+  { name: "Pop squats", dur: 40, cal: 13, phase: "hiit", tip: "Feet wide, explosive up", vid: "https://www.youtube.com/results?search_query=pop+squats+exercise+tutorial" },
+];
+
+const phases = [
+  { key: "warm", label: "Warm-up", duration: "5 min", badgeStyle: "background:#E1F5EE;color:#0F6E56;", color: "#1D9E75" },
+  { key: "cardio", label: "Cardio burn", duration: "10 min", badgeStyle: "background:#FAEEDA;color:#633806;", color: "#BA7517" },
+  { key: "hiit", label: "HIIT blast", duration: "5 min", badgeStyle: "background:#FAECE7;color:#4A1B0C;", color: "#D85A30" },
+];
+
+const plan = document.getElementById("planView");
+phases.forEach((ph, pi) => {
+  if (pi > 0) { const hr = document.createElement("hr"); hr.className = "div"; plan.appendChild(hr); }
+  const hdr = document.createElement("div"); hdr.className = "phase-header";
+  hdr.innerHTML = `<span class="phase-badge" style="${ph.badgeStyle}">${ph.label}</span><span class="phase-title">Phase ${pi+1}</span><span class="phase-duration">${ph.duration}</span>`;
+  plan.appendChild(hdr);
+  const grid = document.createElement("div"); grid.className = "exercise-grid";
+  routine.filter(e => e.phase === ph.key).forEach(ex => {
+    const c = document.createElement("div"); c.className = "ex-card";
+    c.innerHTML = `<div class="ex-name">${ex.name}</div><div class="ex-detail">${ex.dur}s · ${ex.tip}</div><div class="ex-cal">~${ex.cal} kcal</div><a class="ex-link" href="${ex.vid}" target="_blank"><svg class="play-icon" viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9" fill="#185FA5"/></svg>Watch tutorial</a>`;
+    grid.appendChild(c);
+  });
+  plan.appendChild(grid);
+});
+
+const tip = document.createElement("div"); tip.className = "tip";
+tip.textContent = "Tap 'Watch tutorial' on any card to see a how-to video on YouTube. Rest 15–20 sec between exercises if needed.";
+plan.appendChild(tip);
+
+let timerInt = null, running = false, curIdx = 0, elapsed = 0;
+function fmt(s) { return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
+function phaseColor(p) { return phases.find(x => x.key === p)?.color || "#1D9E75"; }
+function phaseLabel(p) { return phases.find(x => x.key === p)?.label || ""; }
+
+function setDisplay() {
+  if (curIdx >= routine.length) {
+    document.getElementById("bigTimer").textContent = "Done!";
+    document.getElementById("currentExName").textContent = "Great work! ~180 kcal burned";
+    document.getElementById("nextExName").textContent = "";
+    document.getElementById("timerFill").style.width = "100%";
+    document.getElementById("phaseInd").textContent = "";
+    document.getElementById("timerVidLink").style.display = "none";
+    clearInterval(timerInt); running = false;
+    document.getElementById("startBtn").textContent = "Start";
+    return;
+  }
+  const ex = routine[curIdx];
+  const rem = ex.dur - elapsed;
+  document.getElementById("bigTimer").textContent = fmt(rem);
+  document.getElementById("currentExName").textContent = ex.name;
+  const next = routine[curIdx + 1];
+  document.getElementById("nextExName").textContent = next ? "Next: " + next.name : "Last exercise!";
+  document.getElementById("timerFill").style.width = Math.round((rem / ex.dur) * 100) + "%";
+  document.getElementById("timerFill").style.background = phaseColor(ex.phase);
+  document.getElementById("phaseInd").textContent = phaseLabel(ex.phase) + " · Exercise " + (curIdx+1) + " of " + routine.length;
+  const lnk = document.getElementById("timerVidLink");
+  lnk.href = ex.vid; lnk.style.display = "block";
+}
+
+function toggleTimer() {
+  if (running) {
+    clearInterval(timerInt); running = false;
+    document.getElementById("startBtn").textContent = "Resume";
+  } else {
+    running = true;
+    document.getElementById("startBtn").textContent = "Pause";
+    setDisplay();
+    timerInt = setInterval(() => {
+      elapsed++;
+      if (elapsed >= routine[curIdx].dur) { curIdx++; elapsed = 0; }
+      setDisplay();
+    }, 1000);
+  }
+}
+
+function resetTimer() {
+  clearInterval(timerInt); running = false; curIdx = 0; elapsed = 0;
+  document.getElementById("startBtn").textContent = "Start";
+  document.getElementById("bigTimer").textContent = "5:00";
+  document.getElementById("currentExName").textContent = "Press Start to begin";
+  document.getElementById("nextExName").textContent = "";
+  document.getElementById("timerFill").style.width = "100%";
+  document.getElementById("timerFill").style.background = "#1D9E75";
+  document.getElementById("phaseInd").textContent = "";
+  document.getElementById("timerVidLink").style.display = "none";
+}
+
+function showView(v) {
+  document.getElementById("planView").style.display = v === "plan" ? "" : "none";
+  document.getElementById("timerView").style.display = v === "timer" ? "" : "none";
+  document.querySelectorAll(".vtab").forEach((t, i) => t.className = "vtab" + (["plan","timer"][i] === v ? " on" : ""));
+}
+</script>
